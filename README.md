@@ -1,5 +1,5 @@
 
-1get 查询
+####1.get 查询
 封装了一个AMQuery对象，调用者不需要关心reqeust和response,从构造的对象来看就知道对应的是get请求。
 ```java
   AMQuery<Blog> query = new AMQuery<>();
@@ -28,10 +28,10 @@
     ```
     
     
-   2. post
+   ####2. post
    
    提交参数
-   ```java
+   ```
      AMPost<String> post = new AMPost<>();
         post.setUrl("http://xx.xx.xx.xx:8090/blog/save")
             .addWhereEqualTo("title","最新报道")
