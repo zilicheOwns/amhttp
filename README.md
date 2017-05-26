@@ -1,7 +1,7 @@
 
 1get 查询
 封装了一个AMQuery对象，调用者不需要关心reqeust和response,从构造的对象来看就知道对应的是get请求。
-```
+```java
   AMQuery<Blog> query = new AMQuery<>();
         query.setUrl("http://xx.xxx.xx:8090/blog/id?id=1");
         query.findObjects(this, new OnFindListener<Blog>() {
@@ -24,11 +24,14 @@
                 Toast.makeText(MainActivity.this,"network error",Toast.LENGTH_LONG).show();
             }
         });
+    
     ```
+    
+    
    2. post
    
    提交参数
-   ```
+   ```java
      AMPost<String> post = new AMPost<>();
         post.setUrl("http://xx.xx.xx.xx:8090/blog/save")
             .addWhereEqualTo("title","最新报道")
