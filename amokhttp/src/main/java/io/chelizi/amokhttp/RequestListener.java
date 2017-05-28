@@ -1,49 +1,45 @@
 package io.chelizi.amokhttp;
 
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
-import com.google.gson.Gson;
-
-import java.lang.reflect.Type;
-
+import io.chelizi.amokhttp.entity.FileCard;
 import io.chelizi.amokhttp.entity.HttpError;
-import io.chelizi.amokhttp.utils.ClassUtils;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 /**
+ * To monitor the HTTP request, four methods are enumerated.
+ * Request success, request failed, network failure, resolve server response.
  *  Created by chelizi on 17/5/28.
  */
 
-public abstract class RequestListener<T> {
+public interface RequestListener<T> {
 
-    public abstract void onResponseSuccess(T response);
+    /**
+     * request success
+     * @param response response entity
+     */
+    void onResponseSuccess(T response);
 
-    public abstract void onResponseError(int code, @Nullable HttpError httpError);
+    /**
+     * request failed.this is error from server.
+     * @param code status code
+     * @param httpError error entity
+     * @link io.chelizi.amokhttp.entity.HttpError
+     */
+    void onResponseError(int code, @Nullable HttpError httpError);
+
+    /**
+     * request failed.(network error)
+     * @param e exception
+     */
+    void onFailure(Exception e);
+
+    /**
+     * parse response from server.this contains response header/json.
+     * @param response response
+     * @throws Throwable ex
+     */
+    void parseNetworkResponse(Response response, FileCard fileCard) throws Throwable;
 
 
-    public abstract void onFailure(Exception e);
-
-    public void parseNetworkResponse(Class<?> clazz, Response response) throws Throwable {
-        ResponseBody responseBody = response.body();
-        String responseStr = null;
-        if (responseBody != null){
-            responseStr = responseBody.string();
-        }
-        Type type = ClassUtils.getType(clazz);
-        T bean = null;
-        if (type != null){
-            if (TextUtils.equals(type.toString(),"class java.lang.String")) bean = (T) responseStr;
-            else bean = new Gson().fromJson(responseStr, type);
-        }
-        final T finalBean = bean;
-        AMOkHttpManager.getInstance().getMainHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                onResponseSuccess(finalBean);
-            }
-        });
-
-    }
 }

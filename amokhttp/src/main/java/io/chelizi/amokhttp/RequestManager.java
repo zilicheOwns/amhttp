@@ -14,11 +14,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import io.chelizi.amokhttp.download.OnDownloadListener;
+import io.chelizi.amokhttp.entity.FileCard;
 import io.chelizi.amokhttp.entity.HttpError;
 import io.chelizi.amokhttp.post.OnAddListener;
 import io.chelizi.amokhttp.query.OnFindListener;
+import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -31,17 +35,17 @@ import okhttp3.ResponseBody;
  * ok http manager
  */
 
-public class AMOkHttpManager {
+public class RequestManager {
 
     private static final int READ_TIMEOUT = 30;
     private static final int WRITE_TIMEOUT = 60;
     private static final int CONNECT_TIMEOUT = 60;
     private OkHttpClient mOkHttpClient;
-    private static volatile AMOkHttpManager mInstance;
+    private static volatile RequestManager mInstance;
     private Handler mMainHandler = new Handler(Looper.getMainLooper());
 
 
-    public AMOkHttpManager() {
+    public RequestManager() {
         mOkHttpClient = new OkHttpClient.Builder()
                 .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
                 .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
@@ -49,11 +53,11 @@ public class AMOkHttpManager {
                 .build();
     }
 
-    public static AMOkHttpManager getInstance() {
+    public static RequestManager getInstance() {
         if (mInstance == null) {
-            synchronized (AMOkHttpManager.class) {
+            synchronized (RequestManager.class) {
                 if (mInstance == null) {
-                    mInstance = new AMOkHttpManager();
+                    mInstance = new RequestManager();
                 }
             }
         }
@@ -86,28 +90,60 @@ public class AMOkHttpManager {
         return RequestBody.create(mediaType, params);
     }
 
-    public <T> void post(String url, HashMap<String, String> params, final OnAddListener<T> listener) {
+    public <T> void post(String url, CacheControl cacheControl, HashMap<String, String> headers, HashMap<String, String> params, Object tag, final OnAddListener<T> listener) {
         try {
             RequestBody requestBody = buildRequestBody(params);
-            final Request request = new Request.Builder().url(url).post(requestBody).build();
+            final Request request = new Request.Builder()
+                    .cacheControl(cacheControl)
+                    .headers(Headers.of(headers))
+                    .url(url)
+                    .post(requestBody).build();
             enqueue(request, listener);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-
-    public <T> void find(String url, final OnFindListener<T> listener) {
+    public <T> void post(String url, CacheControl cacheControl, HashMap<String, String> headers, String params, Object tag, final OnAddListener<T> listener) {
         try {
-            final Request request = new Request.Builder().url(url).build();
+            RequestBody requestBody = buildRequestBody(params);
+            final Request request = new Request.Builder()
+                    .cacheControl(cacheControl)
+                    .headers(Headers.of(headers))
+                    .url(url)
+                    .post(requestBody).build();
             enqueue(request, listener);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+
+    public <T> void find(String url, CacheControl cacheControl, HashMap<String, String> headers, Object tag, OnFindListener<T> listener) {
+        try {
+            final Request request = new Request.Builder()
+                    .tag(tag)
+                    .url(url)
+                    .cacheControl(cacheControl)
+                    .headers(Headers.of(headers))
+                    .build();
+            enqueue(request, listener);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public <T> void download(String url, FileCard fileCard, OnDownloadListener<T> listener) {
+        Request request = new Request.Builder().url(url).build();
+        enqueue(request,listener,fileCard);
+    }
 
     private <T> void enqueue(Request request, final RequestListener<T> listener) {
+        enqueue(request, listener, null);
+    }
+
+    private <T> void enqueue(Request request, final RequestListener<T> listener, final FileCard fildCard) {
         mOkHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@Nullable Call call, @Nullable final IOException e) {
@@ -128,7 +164,7 @@ public class AMOkHttpManager {
                     if (response.isSuccessful()) {
                         try {
                             if (listener != null) {
-                                listener.parseNetworkResponse(listener.getClass(), response);
+                                listener.parseNetworkResponse(response, fildCard);
                             }
                         } catch (Throwable throwable) {
                             throwable.printStackTrace();

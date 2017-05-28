@@ -1,10 +1,12 @@
 package io.chelizi.amokhttp.post;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import java.util.HashMap;
 
-import io.chelizi.amokhttp.AMOkHttpManager;
+import io.chelizi.amokhttp.RequestManager;
+import okhttp3.CacheControl;
 
 /**
  *  Created by Eddie on 2017/5/21.
@@ -15,6 +17,10 @@ public class AMPost<T> {
 
     private String url;
     private HashMap<String,String> query = new HashMap<>();
+    private HashMap<String, String> headers = new HashMap<>();
+    private CacheControl cacheControl;
+    private String params;
+    private Object tag;
 
     public AMPost setUrl(String url){
         this.url = url;
@@ -27,7 +33,31 @@ public class AMPost<T> {
     }
 
 
+    public AMPost setCacheControl(CacheControl cacheControl) {
+        this.cacheControl = cacheControl;
+        return this;
+    }
+
+    public AMPost setHeaders(HashMap<String, String> headers) {
+        this.headers = headers;
+        return this;
+    }
+
+    public AMPost setTag(Object tag) {
+        this.tag = tag;
+        return this;
+    }
+
+    public AMPost setParams(String params) {
+        this.params = params;
+        return this;
+    }
+
     public void addObjects(Context context, OnAddListener<T> listener){
-        AMOkHttpManager.getInstance().post(url,query,listener);
+        if (query.size() > 0){
+            RequestManager.getInstance().post(url,cacheControl,headers,query,tag,listener);
+        }else if (!TextUtils.isEmpty(params)){
+            RequestManager.getInstance().post(url,cacheControl,headers,params,tag,listener);
+        }
     }
 }

@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/AMOKHtpp.iml" filepath="$PROJECT_DIR$/AMOKHtpp.iml" />
       <module fileurl="file://$PROJECT_DIR$/amhttp.iml" filepath="$PROJECT_DIR$/amhttp.iml" />
       <module fileurl="file://$PROJECT_DIR$/amokhttp/amokhttp.iml" filepath="$PROJECT_DIR$/amokhttp/amokhttp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
