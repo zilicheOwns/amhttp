@@ -1,5 +1,5 @@
 ### 1.AMDownload 下载
-   构造一个AMDownload对象，设置FildCard.
+   构造一个AMDownload对象，设置FildCard.支持下载进度条。
 ```java
 AMDownload<File> download = new AMDownload<>();
         download.setUrl("http://img0.utuku.china.com/550x0/news/20170528/1b3b24eb-44d4-4548-a40a-e6c089f6b4db.jpg")
