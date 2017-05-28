@@ -40,6 +40,6 @@ public class AMQuery<T> {
     }
 
     public void findObjects(Context context, OnFindListener<T> listener) {
-        RequestManager.getInstance().find(url,cacheControl,headers, tag, listener);
+        RequestManager.getInstance().find(context,url,cacheControl,headers, tag, listener);
     }
 }

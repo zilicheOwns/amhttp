@@ -1,5 +1,6 @@
 package io.chelizi.amokhttp;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
@@ -90,28 +91,32 @@ public class RequestManager {
         return RequestBody.create(mediaType, params);
     }
 
-    public <T> void post(String url, CacheControl cacheControl, HashMap<String, String> headers, HashMap<String, String> params, Object tag, final OnAddListener<T> listener) {
+    public <T> void post(Context context, String url, CacheControl cacheControl, HashMap<String, String> headers, HashMap<String, String> params, Object tag, final OnAddListener<T> listener) {
         try {
             RequestBody requestBody = buildRequestBody(params);
             final Request request = new Request.Builder()
-                    .cacheControl(cacheControl)
+                    .cacheControl(cacheControl == null ? CacheControl.FORCE_NETWORK : cacheControl)
                     .headers(Headers.of(headers))
+                    .tag(tag == null ? context.hashCode() : tag)
                     .url(url)
-                    .post(requestBody).build();
+                    .post(requestBody)
+                    .build();
             enqueue(request, listener);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public <T> void post(String url, CacheControl cacheControl, HashMap<String, String> headers, String params, Object tag, final OnAddListener<T> listener) {
+    public <T> void post(Context context, String url, CacheControl cacheControl, HashMap<String, String> headers, String params, Object tag, final OnAddListener<T> listener) {
         try {
             RequestBody requestBody = buildRequestBody(params);
             final Request request = new Request.Builder()
-                    .cacheControl(cacheControl)
+                    .cacheControl(cacheControl == null ? CacheControl.FORCE_NETWORK : cacheControl)
+                    .tag(tag == null ? context.hashCode() : tag )
                     .headers(Headers.of(headers))
                     .url(url)
-                    .post(requestBody).build();
+                    .post(requestBody)
+                    .build();
             enqueue(request, listener);
         } catch (Exception e) {
             e.printStackTrace();
@@ -119,12 +124,12 @@ public class RequestManager {
     }
 
 
-    public <T> void find(String url, CacheControl cacheControl, HashMap<String, String> headers, Object tag, OnFindListener<T> listener) {
+    public <T> void find(Context context, String url, CacheControl cacheControl, HashMap<String, String> headers, Object tag, OnFindListener<T> listener) {
         try {
             final Request request = new Request.Builder()
-                    .tag(tag)
+                    .tag(tag == null ? context.hashCode() : tag)
                     .url(url)
-                    .cacheControl(cacheControl)
+                    .cacheControl(cacheControl == null ? CacheControl.FORCE_NETWORK : cacheControl)
                     .headers(Headers.of(headers))
                     .build();
             enqueue(request, listener);

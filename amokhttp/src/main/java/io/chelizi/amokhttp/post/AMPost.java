@@ -55,9 +55,9 @@ public class AMPost<T> {
 
     public void addObjects(Context context, OnAddListener<T> listener){
         if (query.size() > 0){
-            RequestManager.getInstance().post(url,cacheControl,headers,query,tag,listener);
+            RequestManager.getInstance().post(context,url,cacheControl,headers,query,tag,listener);
         }else if (!TextUtils.isEmpty(params)){
-            RequestManager.getInstance().post(url,cacheControl,headers,params,tag,listener);
+            RequestManager.getInstance().post(context,url,cacheControl,headers,params,tag,listener);
         }
     }
 }
