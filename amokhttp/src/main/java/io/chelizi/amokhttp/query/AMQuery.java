@@ -5,8 +5,8 @@ import android.content.Context;
 import io.chelizi.amokhttp.AMOkHttpManager;
 
 /**
- *  Created by Eddie on 2017/5/20.
- *  get query
+ * Created by Eddie on 2017/5/20.
+ * get query
  */
 
 public class AMQuery<T> {
@@ -19,7 +19,7 @@ public class AMQuery<T> {
     }
 
 
-    public void findObjects(Context context, OnFindListener<T> listener){
-        AMOkHttpManager.getInstance().find(url,listener);
+    public void findObjects(Context context, OnFindListener<T> listener) {
+        AMOkHttpManager.getInstance().find(context, url, listener);
     }
 }

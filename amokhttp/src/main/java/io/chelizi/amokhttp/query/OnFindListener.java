@@ -1,57 +1,11 @@
 package io.chelizi.amokhttp.query;
 
-import android.support.annotation.Nullable;
-import android.text.TextUtils;
-
-import com.google.gson.Gson;
-
-import java.lang.reflect.Type;
-
-import io.chelizi.amokhttp.AMOkHttpManager;
-import io.chelizi.amokhttp.entity.HttpError;
-import io.chelizi.amokhttp.utils.ClassUtils;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
+import io.chelizi.amokhttp.RequestListener;
 
 /**
  *  Created by Eddie on 2017/5/20.
  */
 
-public abstract class OnFindListener<T> {
-
-
-    public abstract void onResponseSuccess(T response);
-
-
-    public abstract void onResponseError(int code, @Nullable HttpError httpError);
-
-
-    public abstract void onFailure(Exception e);
-
-
-    public void parseNetworkResponse(Response response) throws Throwable {
-        ResponseBody responseBody = response.body();
-        String responseStr = null;
-        if (responseBody != null){
-            responseStr = responseBody.string();
-        }
-        Type type = ClassUtils.getType(OnFindListener.this.getClass());
-        T bean = null;
-        if (type != null){
-            if (TextUtils.equals(type.toString(),"class java.lang.String")) {
-                bean = (T) responseStr;
-            } else {
-                bean = new Gson().fromJson(responseStr, type);
-            }
-        }
-        final T finalBean = bean;
-        AMOkHttpManager.getInstance().getMainHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                onResponseSuccess(finalBean);
-            }
-        });
-
-    }
+public abstract class OnFindListener<T> extends RequestListener<T> {
 
 }
