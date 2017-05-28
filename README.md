@@ -1,4 +1,39 @@
-### 2. post 提交
+### 1.AMDownload 下载
+   构造一个AMDownload对象，设置FildCard.
+```java
+AMDownload<File> download = new AMDownload<>();
+        download.setUrl("http://img0.utuku.china.com/550x0/news/20170528/1b3b24eb-44d4-4548-a40a-e6c089f6b4db.jpg")
+                .setFileCard(new FileCard(
+                        getCacheDir().getAbsolutePath(),
+                        System.currentTimeMillis() + ".jpg"));
+
+        download.downloadObjects(this, new OnDownloadListener<File>() {
+
+            @Override
+            public void onProgressChanged(long progress, long total) {
+                Log.d(MainActivity.class.getSimpleName(),"progress = " + progress + ",total = " + total );
+            }
+
+            @Override
+            public void onResponseSuccess(File response) {
+                Glide.with(MainActivity.this).load(response.getAbsolutePath()).into(
+                        imageView);
+            }
+
+            @Override
+            public void onResponseError(int code, @Nullable HttpError httpError) {
+
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+
+            }
+        });
+```
+
+
+### 2. AMPost 提交
 ```java
  AMPost<String> post = new AMPost<>();
         post.setUrl("http://192.168.43.36:8090/blog/save")
@@ -28,7 +63,7 @@
 
 
 
-#### 1.get 查询
+### 3.AMQuery 查询
 封装了一个AMQuery对象，调用者不需要关心reqeust和response,从构造的对象来看就知道对应的是get请求。
 ```java
   AMQuery<Blog> query = new AMQuery<>();
