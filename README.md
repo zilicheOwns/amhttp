@@ -24,6 +24,4 @@
                 Toast.makeText(MainActivity.this,"network error",Toast.LENGTH_LONG).show();
             }
         });
-    
-    ```
-   
+  ```
