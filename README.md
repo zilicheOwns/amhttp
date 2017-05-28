@@ -26,35 +26,4 @@
         });
     
     ```
-    
-    
-   2. post
    
-   提交参数
-   
-   ```
-     AMPost<String> post = new AMPost<>();
-        post.setUrl("http://xx.xx.xx.xx:8090/blog/save")
-            .addWhereEqualTo("title","最新报道")
-            .addWhereEqualTo("content","tianjin");
-        post.addObjects(this, new OnAddListener<String>() {
-            @Override
-            public void onResponseSuccess(String response) {
-                if (response != null){
-                    Toast.makeText(MainActivity.this,response,Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onResponseError(int code, @Nullable HttpError httpError) {
-                if (httpError != null){
-                    Toast.makeText(MainActivity.this,"title = "+httpError.getError_message(),Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                Toast.makeText(MainActivity.this,"network error",Toast.LENGTH_LONG).show();
-            }
-        });
-```
