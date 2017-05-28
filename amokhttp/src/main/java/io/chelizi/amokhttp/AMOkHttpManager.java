@@ -61,6 +61,10 @@ public class AMOkHttpManager {
     }
 
 
+    public Handler getMainHandler() {
+        return mMainHandler;
+    }
+
     private RequestBody buildRequestBody(HashMap<String, String> params) {
         JSONObject jsonObject = new JSONObject();
         try {
@@ -82,57 +86,11 @@ public class AMOkHttpManager {
         return RequestBody.create(mediaType, params);
     }
 
-    public <T> void post(String url, HashMap<String,String> params,final OnAddListener<T> listener){
+    public <T> void post(String url, HashMap<String, String> params, final OnAddListener<T> listener) {
         try {
             RequestBody requestBody = buildRequestBody(params);
             final Request request = new Request.Builder().url(url).post(requestBody).build();
-            mOkHttpClient.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(@Nullable Call call, @Nullable final IOException e) {
-                    responseAddFailure(listener,"http error");
-                }
-
-                @Override
-                public void onResponse(@Nullable Call call, @Nullable final Response response) throws IOException {
-                    if (response != null) {
-                        try {
-                            if (response.isSuccessful()){
-                                if (listener != null) listener.parseNetworkResponse(response);
-                            }else{
-                                ResponseBody body = response.body();
-                                if (body != null){
-                                    String error = body.string();
-                                    if (!TextUtils.isEmpty(error)){
-                                        final HttpError httpError = new Gson().fromJson(error,HttpError.class);
-                                        if (httpError != null){
-                                            mMainHandler.post(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    if (listener != null){
-                                                        listener.onResponseError(response.code(),httpError);
-                                                    }
-                                                }
-                                            });
-                                        }else{
-                                            responseAddFailure(listener,"http error");
-                                        }
-                                    }else{
-                                        responseAddFailure(listener,"http error");
-                                    }
-                                }else{
-                                    responseAddFailure(listener,"http error");
-                                }
-                            }
-
-                        } catch (Throwable throwable) {
-                            throwable.printStackTrace();
-                            responseAddFailure(listener,"http error");
-                        }
-                    } else {
-                        responseAddFailure(listener,"http error");
-                    }
-                }
-            });
+            enqueue(request, listener);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -142,79 +100,59 @@ public class AMOkHttpManager {
     public <T> void find(String url, final OnFindListener<T> listener) {
         try {
             final Request request = new Request.Builder().url(url).build();
-            mOkHttpClient.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(@Nullable Call call, @Nullable final IOException e) {
-                    responseFailure(listener,"http error");
-                }
-
-                @Override
-                public void onResponse(@Nullable Call call, @Nullable final Response response) throws IOException {
-                    if (response != null) {
-                        try {
-                            if (response.isSuccessful()){
-                                if (listener != null) listener.parseNetworkResponse(response);
-                            }else{
-                                ResponseBody body = response.body();
-                                if (body != null){
-                                    String error = body.string();
-                                    if (!TextUtils.isEmpty(error)){
-                                        final HttpError httpError = new Gson().fromJson(error,HttpError.class);
-                                        if (httpError != null){
-                                            mMainHandler.post(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    if (listener != null){
-                                                        listener.onResponseError(response.code(),httpError);
-                                                    }
-                                                }
-                                            });
-                                        }else{
-                                            responseFailure(listener,"http error");
-                                        }
-                                    }else{
-                                        responseFailure(listener,"http error");
-                                    }
-                                }else{
-                                    responseFailure(listener,"http error");
-                                }
-                            }
-
-                        } catch (Throwable throwable) {
-                            throwable.printStackTrace();
-                            responseFailure(listener,"http error");
-                        }
-                    } else {
-                        responseFailure(listener,"http error");
-                    }
-                }
-            });
+            enqueue(request, listener);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public Handler getMainHandler() {
-        return mMainHandler;
-    }
 
-    private void responseFailure(final OnFindListener listener,final String message){
-        mMainHandler.post(new Runnable() {
+    private <T> void enqueue(Request request, final RequestListener<T> listener) {
+        mOkHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void run() {
-                if (listener != null)
-                    listener.onFailure(new RuntimeException(message));
+            public void onFailure(@Nullable Call call, @Nullable final IOException e) {
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (listener != null)
+                            listener.onFailure(new RuntimeException("network error"));
+                    }
+                });
             }
-        });
-    }
 
-
-    private void responseAddFailure(final OnAddListener listener,final String message){
-        mMainHandler.post(new Runnable() {
             @Override
-            public void run() {
-                if (listener != null)
-                    listener.onFailure(new RuntimeException(message));
+            public void onResponse(@Nullable Call call, @Nullable final Response response) throws IOException {
+                if (response == null) {
+                    throw new NullPointerException("okHttp response is null");
+                } else {
+                    if (response.isSuccessful()) {
+                        try {
+                            if (listener != null) {
+                                listener.parseNetworkResponse(listener.getClass(), response);
+                            }
+                        } catch (Throwable throwable) {
+                            throwable.printStackTrace();
+                        }
+                    } else {
+                        ResponseBody body = response.body();
+                        if (body == null) {
+                            throw new NullPointerException("response boy is null");
+                        } else {
+                            String error = body.string();
+                            final HttpError httpError = new Gson().fromJson(error, HttpError.class);
+                            if (httpError != null) {
+                                mMainHandler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (listener != null) {
+                                            listener.onResponseError(response.code(), httpError);
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
             }
         });
     }

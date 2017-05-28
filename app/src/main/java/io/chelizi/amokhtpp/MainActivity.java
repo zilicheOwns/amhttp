@@ -4,13 +4,12 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Toast;
 
 import io.chelizi.amokhtpp.entity.Blog;
 import io.chelizi.amokhttp.entity.HttpError;
 import io.chelizi.amokhttp.post.AMPost;
-import io.chelizi.amokhttp.query.AMQuery;
 import io.chelizi.amokhttp.post.OnAddListener;
+import io.chelizi.amokhttp.query.AMQuery;
 import io.chelizi.amokhttp.query.OnFindListener;
 
 public class MainActivity extends AppCompatActivity {
@@ -36,21 +35,17 @@ public class MainActivity extends AppCompatActivity {
         post.addObjects(this, new OnAddListener<String>() {
             @Override
             public void onResponseSuccess(String response) {
-                if (response != null){
-                    Toast.makeText(MainActivity.this,response,Toast.LENGTH_LONG).show();
-                }
+
             }
 
             @Override
             public void onResponseError(int code, @Nullable HttpError httpError) {
-                if (httpError != null){
-                    Toast.makeText(MainActivity.this,"title = "+httpError.getError_message(),Toast.LENGTH_LONG).show();
-                }
+
             }
 
             @Override
             public void onFailure(Exception e) {
-                Toast.makeText(MainActivity.this,"network error",Toast.LENGTH_LONG).show();
+
             }
         });
     }
@@ -62,21 +57,17 @@ public class MainActivity extends AppCompatActivity {
         query.findObjects(this, new OnFindListener<Blog>() {
             @Override
             public void onResponseSuccess(Blog response) {
-                if (response != null){
-                    Toast.makeText(MainActivity.this,"title = "+response.getTitle(),Toast.LENGTH_LONG).show();
-                }
+
             }
 
             @Override
             public void onResponseError(int code, @Nullable HttpError httpError) {
-                if (httpError != null){
-                    Toast.makeText(MainActivity.this,"title = "+httpError.getError_message(),Toast.LENGTH_LONG).show();
-                }
+
             }
 
             @Override
             public void onFailure(Exception e) {
-                Toast.makeText(MainActivity.this,"network error",Toast.LENGTH_LONG).show();
+
             }
         });
     }
