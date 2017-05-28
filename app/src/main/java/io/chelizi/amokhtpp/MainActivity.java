@@ -3,8 +3,12 @@ package io.chelizi.amokhtpp;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 
 import java.io.File;
 
@@ -17,20 +21,41 @@ import io.chelizi.amokhttp.post.AMPost;
 import io.chelizi.amokhttp.post.OnAddListener;
 import io.chelizi.amokhttp.query.AMQuery;
 import io.chelizi.amokhttp.query.OnFindListener;
+import okhttp3.CacheControl;
 
 public class MainActivity extends AppCompatActivity {
+
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.load).setOnClickListener(new View.OnClickListener() {
+        imageView = (ImageView) findViewById(R.id.image);
+        findViewById(R.id.query).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 load();
-               // add();
+            }
+        });
 
+        findViewById(R.id.post).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                add();
+            }
+        });
+
+        findViewById(R.id.download).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 download();
+            }
+        });
+
+        findViewById(R.id.upload).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
             }
         });
@@ -39,18 +64,21 @@ public class MainActivity extends AppCompatActivity {
     private void download() {
         AMDownload<File> download = new AMDownload<>();
         download.setUrl("http://img0.utuku.china.com/550x0/news/20170528/1b3b24eb-44d4-4548-a40a-e6c089f6b4db.jpg")
-                .setFileCard(new FileCard("destDir","destName"));
+                .setFileCard(new FileCard(
+                        getCacheDir().getAbsolutePath(),
+                        System.currentTimeMillis() + ".jpg"));
 
         download.downloadObjects(this, new OnDownloadListener<File>() {
 
             @Override
             public void onProgressChanged(long progress, long total) {
-
+                Log.d(MainActivity.class.getSimpleName(),"progress = " + progress + ",total = " + total );
             }
 
             @Override
             public void onResponseSuccess(File response) {
-
+                Glide.with(MainActivity.this).load(response.getAbsolutePath()).into(
+                        imageView);
             }
 
             @Override
@@ -69,7 +97,10 @@ public class MainActivity extends AppCompatActivity {
         AMPost<String> post = new AMPost<>();
         post.setUrl("http://192.168.43.36:8090/blog/save")
             .addWhereEqualTo("title","最新报道")
-            .addWhereEqualTo("content","tianjin");
+            .addWhereEqualTo("content","tianjin")
+            .setCacheControl(CacheControl.FORCE_NETWORK)
+            .setTag(hashCode());
+
         post.addObjects(this, new OnAddListener<String>() {
             @Override
             public void onResponseSuccess(String response) {
@@ -91,7 +122,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void load() {
         AMQuery<Blog> query = new AMQuery<>();
-        query.setUrl("http://192.168.1.10:8090/blog/id?id=1");
+        query.setUrl("http://192.168.1.10:8090/blog/id?id=1")
+             .setCacheControl(CacheControl.FORCE_NETWORK)
+             .setTag(hashCode());
         query.findObjects(this, new OnFindListener<Blog>() {
             @Override
             public void onResponseSuccess(Blog response) {
