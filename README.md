@@ -27,7 +27,7 @@
 
 ### 2. AMPost 提交
 
-构建一个AMPost对象。有两种提交参数的方法，1.addWhereEqualTo(key,value) 2.setParams(String params).目前只支持人选其一。
+构建一个AMPost对象。有两种提交参数的方法，1.addWhereEqualTo(key,value) 2.setParams(String params).目前只支持任选其一。
 
 ```java
  AMPost<String> post = new AMPost<>();
