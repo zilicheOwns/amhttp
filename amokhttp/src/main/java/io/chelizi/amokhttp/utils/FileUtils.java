@@ -8,9 +8,6 @@ import java.io.InputStream;
 import io.chelizi.amokhttp.download.OnSaveListener;
 import io.chelizi.amokhttp.entity.FileCard;
 
-/**
- * Created by shanqiu on 2016/5/6.
- */
 public class FileUtils {
 
     public static File saveFile(InputStream is, final long contentLength,

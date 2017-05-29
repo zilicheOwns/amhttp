@@ -65,32 +65,6 @@ public class RequestManager {
         return mInstance;
     }
 
-
-    public Handler getMainHandler() {
-        return mMainHandler;
-    }
-
-    private RequestBody buildRequestBody(HashMap<String, String> params) {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            if (params != null && params.size() > 0) {
-                for (Map.Entry<String, String> entry : params.entrySet()) {
-                    jsonObject.put(entry.getKey(), entry.getValue());
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return buildRequestBody(jsonObject.toString());
-    }
-
-
-    private RequestBody buildRequestBody(String params) {
-        MediaType mediaType = MediaType.parse("application/json");
-        if (TextUtils.isEmpty(params)) params = "";
-        return RequestBody.create(mediaType, params);
-    }
-
     public <T> void post(Context context, String url, CacheControl cacheControl, HashMap<String, String> headers, HashMap<String, String> params, Object tag, final OnAddListener<T> listener) {
         try {
             RequestBody requestBody = buildRequestBody(params);
@@ -143,6 +117,33 @@ public class RequestManager {
         Request request = new Request.Builder().url(url).build();
         enqueue(request,listener,fileCard);
     }
+
+
+    public Handler getMainHandler() {
+        return mMainHandler;
+    }
+
+    private RequestBody buildRequestBody(HashMap<String, String> params) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            if (params != null && params.size() > 0) {
+                for (Map.Entry<String, String> entry : params.entrySet()) {
+                    jsonObject.put(entry.getKey(), entry.getValue());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return buildRequestBody(jsonObject.toString());
+    }
+
+
+    private RequestBody buildRequestBody(String params) {
+        MediaType mediaType = MediaType.parse("application/json");
+        if (TextUtils.isEmpty(params)) params = "";
+        return RequestBody.create(mediaType, params);
+    }
+
 
     private <T> void enqueue(Request request, final RequestListener<T> listener) {
         enqueue(request, listener, null);
