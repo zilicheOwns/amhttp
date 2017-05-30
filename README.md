@@ -1,3 +1,10 @@
+## 用法
+
+在项目module的build.gradle中
+```gradle
+  compile 'io.chelizi:amhttp:1.0.3'
+```
+
 ### 1.AMQuery 查询（get）
 
 构建一个AMQuery对象，不需要关心内部如何实现，配置相应的参数即可。对于response返回的数据经Gson映射成实体。使用起来简单方便。
