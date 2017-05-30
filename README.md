@@ -1,6 +1,6 @@
 ## 用法
 
-在项目module的build.gradle中
+在project module的build.gradle中添加如下。
 ```gradle
   compile 'io.chelizi:amhttp:1.0.3'
 ```
