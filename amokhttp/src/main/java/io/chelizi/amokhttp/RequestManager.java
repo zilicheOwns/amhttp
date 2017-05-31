@@ -3,7 +3,6 @@ package io.chelizi.amokhttp;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
@@ -149,10 +148,10 @@ public class RequestManager {
         enqueue(request, listener, null);
     }
 
-    private <T> void enqueue(Request request, final RequestListener<T> listener, final FileCard fildCard) {
+    private <T> void enqueue(Request request, final RequestListener<T> listener, final FileCard fileCard) {
         mOkHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(@Nullable Call call, @Nullable final IOException e) {
+            public void onFailure(Call call, final IOException e) {
                 mMainHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -163,14 +162,14 @@ public class RequestManager {
             }
 
             @Override
-            public void onResponse(@Nullable Call call, @Nullable final Response response) throws IOException {
+            public void onResponse(Call call, final Response response) throws IOException {
                 if (response == null) {
                     throw new NullPointerException("okHttp response is null");
                 } else {
                     if (response.isSuccessful()) {
                         try {
                             if (listener != null) {
-                                listener.parseNetworkResponse(response, fildCard);
+                                listener.parseNetworkResponse(response, fileCard);
                             }
                         } catch (Throwable throwable) {
                             throwable.printStackTrace();

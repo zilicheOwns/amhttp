@@ -1,7 +1,5 @@
 package io.chelizi.amokhttp;
 
-import android.support.annotation.Nullable;
-
 import io.chelizi.amokhttp.entity.FileCard;
 import io.chelizi.amokhttp.entity.HttpError;
 import okhttp3.Response;
@@ -26,7 +24,7 @@ public interface RequestListener<T> {
      * @param httpError error entity
      * @link io.chelizi.amokhttp.entity.HttpError
      */
-    void onResponseError(int code, @Nullable HttpError httpError);
+    void onResponseError(int code, HttpError httpError);
 
     /**
      * request failed.(network error)

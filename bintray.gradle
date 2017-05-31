@@ -43,7 +43,6 @@ install {
             name PROJ_NAME
             description PROJ_DESCRIPTION
             url PROJ_WEBSITEURL
-            inceptionYear '2017'
 
             packaging 'aar'
             groupId PROJ_GROUP
@@ -54,7 +53,6 @@ install {
                 license {
                     name 'The Apache Software License, Version 2.0'
                     url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    distribution 'repo'
                 }
             }
             scm {
