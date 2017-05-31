@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +20,9 @@ import io.chelizi.amokhttp.entity.FileCard;
 import io.chelizi.amokhttp.entity.HttpError;
 import io.chelizi.amokhttp.post.OnAddListener;
 import io.chelizi.amokhttp.query.OnFindListener;
+import io.chelizi.amokhttp.upload.OnUploadListener;
+import io.chelizi.amokhttp.upload.ProgressRequestBody;
+import io.chelizi.amokhttp.upload.ProgressRequestListener;
 import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -63,6 +67,34 @@ public class RequestManager {
         }
         return mInstance;
     }
+
+    public <T> void upload(Context context, String url, CacheControl cacheControl, HashMap<String, String> headers, File file, Object tag, final OnUploadListener<T> listener){
+        try {
+            RequestBody requestBody = RequestBody.create(MediaType.parse("application/octet-stream"), file);
+            final Request request = new Request.Builder()
+                    .cacheControl(cacheControl == null ? CacheControl.FORCE_NETWORK : cacheControl)
+                    .headers(Headers.of(headers))
+                    .tag(tag == null ? context.hashCode() : tag)
+                    .url(url)
+                    .post(new ProgressRequestBody(requestBody, new ProgressRequestListener() {
+                        @Override
+                        public void onRequestProgress(final long bytesWritten, final long contentLength, final boolean done) {
+                            if (listener != null){
+                                mMainHandler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        listener.onRequestProgress(bytesWritten,contentLength,done);
+                                    }
+                                });
+                            }
+                        }
+                    })).build();
+            enqueue(request,listener);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public <T> void post(Context context, String url, CacheControl cacheControl, HashMap<String, String> headers, HashMap<String, String> params, Object tag, final OnAddListener<T> listener) {
         try {

@@ -21,8 +21,8 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:25.3.1'
     testCompile 'junit:junit:4.12'
-    //compile project(':amokhttp')
-    compile 'io.chelizi:amhttp:1.0.4'
+    compile project(':amokhttp')
+    //compile 'io.chelizi:amhttp:1.0.4'
 
     compile 'com.github.bumptech.glide:glide:4.0.0-RC0'
 }

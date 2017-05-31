@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide;
 import java.io.File;
 
 import io.chelizi.amokhtpp.entity.Blog;
+import io.chelizi.amokhtpp.entity.Size;
 import io.chelizi.amokhttp.download.AMDownload;
 import io.chelizi.amokhttp.download.OnDownloadListener;
 import io.chelizi.amokhttp.entity.FileCard;
@@ -21,6 +22,8 @@ import io.chelizi.amokhttp.post.AMPost;
 import io.chelizi.amokhttp.post.OnAddListener;
 import io.chelizi.amokhttp.query.AMQuery;
 import io.chelizi.amokhttp.query.OnFindListener;
+import io.chelizi.amokhttp.upload.AMUpload;
+import io.chelizi.amokhttp.upload.OnUploadListener;
 import okhttp3.CacheControl;
 
 public class MainActivity extends AppCompatActivity {
@@ -56,6 +59,33 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.upload).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                upload();
+            }
+        });
+    }
+
+    private void upload() {
+        AMUpload<Size> upload = new AMUpload<>();
+        upload.setUrl("http://192.168.43.36:8090/blog/save")
+                .setFile(new File("pathName"));
+        upload.uploadObjects(this, new OnUploadListener<Size>() {
+            @Override
+            public void onRequestProgress(long progress, long total, boolean done) {
+
+            }
+
+            @Override
+            public void onResponseSuccess(Size response) {
+
+            }
+
+            @Override
+            public void onResponseError(int code, HttpError httpError) {
+
+            }
+
+            @Override
+            public void onFailure(Exception e) {
 
             }
         });
