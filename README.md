@@ -64,8 +64,38 @@ compile 'io.chelizi:amhttp:1.0.4'
 
 ```
 
+### 3.AMUpload 上传
 
-### 3.AMDownload 下载
+构造一个AMUpload对象。
+
+```java
+        AMUpload<Size> upload = new AMUpload<>();
+        upload.setUrl("http://192.168.43.36:8090/blog/save")
+                .setFile(new File("pathName"));
+        upload.uploadObjects(this, new OnUploadListener<Size>() {
+            @Override
+            public void onRequestProgress(long progress, long total, boolean done) {
+
+            }
+
+            @Override
+            public void onResponseSuccess(Size response) {
+
+            }
+
+            @Override
+            public void onResponseError(int code, HttpError httpError) {
+
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+
+            }
+        });
+```
+
+### 4.AMDownload 下载
    构造一个AMDownload对象，设置FildCard.支持下载进度条。最后生成file对象。
 ```java
 AMDownload<File> download = new AMDownload<>();
