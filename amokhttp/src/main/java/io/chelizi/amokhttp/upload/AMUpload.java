@@ -15,22 +15,17 @@ import okhttp3.CacheControl;
 public class AMUpload<T> {
 
     private String url;
-    private HashMap<String, String> query = new HashMap<>();
     private HashMap<String, String> headers = new HashMap<>();
+    private HashMap<String, String> upload = new HashMap<>();
     private CacheControl cacheControl;
     private Object tag;
     private File file;
+    private String fileName;
 
     public AMUpload setUrl(String url) {
         this.url = url;
         return this;
     }
-
-    public AMUpload addWhereEqualTo(String key, String value) {
-        query.put(key, value);
-        return this;
-    }
-
 
     public AMUpload setCacheControl(CacheControl cacheControl) {
         this.cacheControl = cacheControl;
@@ -52,8 +47,19 @@ public class AMUpload<T> {
         return this;
     }
 
-    public void uploadObjects(Context context, OnUploadListener<T> listener) {
-        RequestManager.getInstance().upload(context,url,cacheControl,headers,file,tag,listener);
+    public AMUpload setFileName(String fileName) {
+        this.fileName = fileName;
+        return this;
     }
 
+
+    public AMUpload addWhereEqualTo(String key, String value) {
+        upload.put(key, value);
+        return this;
+    }
+
+
+    public void uploadObjects(Context context, OnUploadListener<T> listener) {
+        RequestManager.getInstance().upload(context, url, cacheControl, headers, file, fileName, upload, tag, listener);
+    }
 }

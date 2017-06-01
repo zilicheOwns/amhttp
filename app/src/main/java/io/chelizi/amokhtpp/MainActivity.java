@@ -67,7 +67,10 @@ public class MainActivity extends AppCompatActivity {
     private void upload() {
         AMUpload<Size> upload = new AMUpload<>();
         upload.setUrl("http://192.168.43.36:8090/blog/save")
-                .setFile(new File("pathName"));
+                .setFile(new File("pathName"))
+                .setFileName("fileName")
+                .addWhereEqualTo("key","value");
+
         upload.uploadObjects(this, new OnUploadListener<Size>() {
             @Override
             public void onRequestProgress(long progress, long total, boolean done) {

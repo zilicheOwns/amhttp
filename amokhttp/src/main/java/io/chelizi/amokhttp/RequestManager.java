@@ -28,6 +28,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -68,9 +69,18 @@ public class RequestManager {
         return mInstance;
     }
 
-    public <T> void upload(Context context, String url, CacheControl cacheControl, HashMap<String, String> headers, File file, Object tag, final OnUploadListener<T> listener){
+    public <T> void upload(
+            Context context,
+            String url,
+            CacheControl cacheControl,
+            HashMap<String, String> headers,
+            File file,
+            String fileName,
+            HashMap<String, String> params,
+            Object tag,
+            final OnUploadListener<T> listener) {
         try {
-            RequestBody requestBody = RequestBody.create(MediaType.parse("application/octet-stream"), file);
+            RequestBody requestBody = buildUploadRequestBody(file, fileName, params);
             final Request request = new Request.Builder()
                     .cacheControl(cacheControl == null ? CacheControl.FORCE_NETWORK : cacheControl)
                     .headers(Headers.of(headers))
@@ -79,24 +89,31 @@ public class RequestManager {
                     .post(new ProgressRequestBody(requestBody, new ProgressRequestListener() {
                         @Override
                         public void onRequestProgress(final long bytesWritten, final long contentLength, final boolean done) {
-                            if (listener != null){
+                            if (listener != null) {
                                 mMainHandler.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        listener.onRequestProgress(bytesWritten,contentLength,done);
+                                        listener.onRequestProgress(bytesWritten, contentLength, done);
                                     }
                                 });
                             }
                         }
                     })).build();
-            enqueue(request,listener);
+            enqueue(request, listener);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
 
-    public <T> void post(Context context, String url, CacheControl cacheControl, HashMap<String, String> headers, HashMap<String, String> params, Object tag, final OnAddListener<T> listener) {
+    public <T> void post(
+            Context context,
+            String url,
+            CacheControl cacheControl,
+            HashMap<String, String> headers,
+            HashMap<String, String> params,
+            Object tag,
+            final OnAddListener<T> listener) {
         try {
             RequestBody requestBody = buildRequestBody(params);
             final Request request = new Request.Builder()
@@ -112,12 +129,19 @@ public class RequestManager {
         }
     }
 
-    public <T> void post(Context context, String url, CacheControl cacheControl, HashMap<String, String> headers, String params, Object tag, final OnAddListener<T> listener) {
+    public <T> void post(
+            Context context,
+            String url,
+            CacheControl cacheControl,
+            HashMap<String, String> headers,
+            String params,
+            Object tag,
+            final OnAddListener<T> listener) {
         try {
             RequestBody requestBody = buildRequestBody(params);
             final Request request = new Request.Builder()
                     .cacheControl(cacheControl == null ? CacheControl.FORCE_NETWORK : cacheControl)
-                    .tag(tag == null ? context.hashCode() : tag )
+                    .tag(tag == null ? context.hashCode() : tag)
                     .headers(Headers.of(headers))
                     .url(url)
                     .post(requestBody)
@@ -129,7 +153,13 @@ public class RequestManager {
     }
 
 
-    public <T> void find(Context context, String url, CacheControl cacheControl, HashMap<String, String> headers, Object tag, OnFindListener<T> listener) {
+    public <T> void find(
+            Context context,
+            String url,
+            CacheControl cacheControl,
+            HashMap<String, String> headers,
+            Object tag,
+            OnFindListener<T> listener) {
         try {
             final Request request = new Request.Builder()
                     .tag(tag == null ? context.hashCode() : tag)
@@ -146,13 +176,31 @@ public class RequestManager {
 
     public <T> void download(String url, FileCard fileCard, OnDownloadListener<T> listener) {
         Request request = new Request.Builder().url(url).build();
-        enqueue(request,listener,fileCard);
+        enqueue(request, listener, fileCard);
     }
 
 
     public Handler getMainHandler() {
         return mMainHandler;
     }
+
+    private RequestBody buildUploadRequestBody(File file, String fileName, HashMap<String, String> params) {
+
+        RequestBody fileBody = RequestBody.create(MediaType.parse("application/octet-stream"), file);
+        MultipartBody.Builder builder = new MultipartBody.Builder();
+        try {
+            if (params != null && params.size() > 0) {
+                for (Map.Entry<String, String> entry : params.entrySet()) {
+                    builder.addFormDataPart(entry.getKey(), entry.getValue());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        builder.addFormDataPart("file", fileName, fileBody);
+        return builder.build();
+    }
+
 
     private RequestBody buildRequestBody(HashMap<String, String> params) {
         JSONObject jsonObject = new JSONObject();
