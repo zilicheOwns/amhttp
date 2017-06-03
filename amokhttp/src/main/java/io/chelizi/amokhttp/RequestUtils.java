@@ -72,4 +72,34 @@ public class RequestUtils {
             }
         });
     }
+
+    public static <T> void execute(OkHttpClient client, Request request, RequestListener<T> listener){
+        try {
+            Response response = client.newCall(request).execute();
+            if (response == null){
+                listener.onFailure(new HandleException("execute request is failed"));
+            }else{
+                if (response.isSuccessful()){
+                    try {
+                        listener.parseNetworkResponse(response,null);
+                    } catch (Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
+                }else{
+                    ResponseBody body = response.body();
+                    if (body == null){
+                        throw new NullPointerException("body is null");
+                    }else{
+                        String error = body.string();
+                        final HttpError httpError = new Gson().fromJson(error, HttpError.class);
+                        if (httpError != null){
+                            listener.onResponseError(response.code(),httpError);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

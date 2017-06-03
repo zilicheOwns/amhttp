@@ -14,6 +14,7 @@ import java.io.File;
 
 import io.chelizi.amokhtpp.entity.Blog;
 import io.chelizi.amokhtpp.entity.Size;
+import io.chelizi.amokhttp.CallMethod;
 import io.chelizi.amokhttp.download.AMDownload;
 import io.chelizi.amokhttp.download.OnDownloadListener;
 import io.chelizi.amokhttp.entity.FileCard;
@@ -38,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.query).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                load();
+                //load();
+                loadSync();
             }
         });
 
@@ -155,16 +157,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private void loadSync(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                load();
+            }
+        }).start();
+    }
+
+
     private void load() {
         AMQuery<Blog> query = new AMQuery<>();
         query.setUrl("http://192.168.1.9:8090/blog/id?id=1")
+             .setCallMethod(CallMethod.SYNC)
              .setCacheControl(CacheControl.FORCE_NETWORK)
              .setTag(hashCode());
         query.findObjects(this, new OnFindListener<Blog>() {
             @Override
             public void onResponseSuccess(Blog response) {
                 if (Thread.currentThread().getName().equals("main")){
-                    Toast.makeText(MainActivity.this,response.getTitle() + ",并且在主线程中",Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this,",并且在主线程中",Toast.LENGTH_LONG).show();
                 }
             }
 

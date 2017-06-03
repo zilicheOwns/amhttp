@@ -73,15 +73,15 @@ public class RequestManager {
                                 Message message = Message.obtain();
                                 message.what = MessageConstant.MESSAGE_UPLOAD_PROGRESS;
                                 Bundle bundle = new Bundle();
-                                bundle.putLong("bytesWritten",bytesWritten);
-                                bundle.putLong("contentLength",contentLength);
-                                bundle.putBoolean("done",done);
+                                bundle.putLong("bytesWritten", bytesWritten);
+                                bundle.putLong("contentLength", contentLength);
+                                bundle.putBoolean("done", done);
                                 message.obj = bundle;
                                 dispatcher.sendMessage(message);
                             }
                         }
                     })).build();
-            RequestUtils.enqueue(mOkHttpClient,request, listener);
+            RequestUtils.enqueue(mOkHttpClient, request, listener);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -90,7 +90,7 @@ public class RequestManager {
 
     public <T> void post(Context context, String url, CacheControl cacheControl,
                          HashMap<String, String> headers, HashMap<String, String> params,
-                         Object tag, final OnAddListener<T> listener) {
+                         Object tag, int callMethod, final OnAddListener<T> listener) {
         try {
             IRequestBodyFactory requestBodyFactory = new RequestBodyFactoryImpl();
             RequestBody requestBody = requestBodyFactory.buildRequestBody(params);
@@ -101,14 +101,18 @@ public class RequestManager {
                     .url(url)
                     .post(requestBody)
                     .build();
-            RequestUtils.enqueue(mOkHttpClient,request, listener);
+            if (callMethod == CallMethod.SYNC) {
+                RequestUtils.execute(mOkHttpClient, request, listener);
+            } else {
+                RequestUtils.enqueue(mOkHttpClient, request, listener);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public <T> void post(Context context, String url, CacheControl cacheControl,
-                         HashMap<String, String> headers, String params, Object tag, final OnAddListener<T> listener) {
+                         HashMap<String, String> headers, String params, Object tag, int callMethod, final OnAddListener<T> listener) {
         try {
             IRequestBodyFactory requestBodyFactory = new RequestBodyFactoryImpl();
             RequestBody requestBody = requestBodyFactory.buildRequestBody(params);
@@ -119,7 +123,11 @@ public class RequestManager {
                     .url(url)
                     .post(requestBody)
                     .build();
-            RequestUtils.enqueue(mOkHttpClient,request, listener);
+            if (callMethod == CallMethod.SYNC) {
+                RequestUtils.execute(mOkHttpClient, request, listener);
+            } else {
+                RequestUtils.enqueue(mOkHttpClient, request, listener);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -127,7 +135,7 @@ public class RequestManager {
 
 
     public <T> void find(Context context, String url, CacheControl cacheControl,
-                         HashMap<String, String> headers, Object tag, OnFindListener<T> listener) {
+                         HashMap<String, String> headers, Object tag, int callMethod, OnFindListener<T> listener) {
         try {
             final Request request = new Request.Builder()
                     .tag(tag == null ? context.hashCode() : tag)
@@ -135,7 +143,11 @@ public class RequestManager {
                     .cacheControl(cacheControl == null ? CacheControl.FORCE_NETWORK : cacheControl)
                     .headers(Headers.of(headers))
                     .build();
-            RequestUtils.enqueue(mOkHttpClient,request, listener);
+            if (callMethod == CallMethod.SYNC) {
+                RequestUtils.execute(mOkHttpClient, request, listener);
+            } else {
+                RequestUtils.enqueue(mOkHttpClient, request, listener);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -144,6 +156,6 @@ public class RequestManager {
 
     public <T> void download(String url, FileCard fileCard, OnDownloadListener<T> listener) {
         Request request = new Request.Builder().url(url).build();
-        RequestUtils.enqueue(mOkHttpClient,request, listener, fileCard);
+        RequestUtils.enqueue(mOkHttpClient, request, listener, fileCard);
     }
 }

@@ -17,6 +17,7 @@ public class AMQuery<T> {
     private CacheControl cacheControl;
     private HashMap<String, String> headers = new HashMap<>();
     private Object tag;
+    private int callMethod;
 
     public AMQuery setUrl(String url) {
         this.url = url;
@@ -39,7 +40,12 @@ public class AMQuery<T> {
         return this;
     }
 
+    public AMQuery setCallMethod(int callMethod) {
+        this.callMethod = callMethod;
+        return this;
+    }
+
     public void findObjects(Context context, OnFindListener<T> listener) {
-        RequestManager.getInstance().find(context,url,cacheControl,headers, tag, listener);
+        RequestManager.getInstance().find(context,url,cacheControl,headers, tag,callMethod, listener);
     }
 }

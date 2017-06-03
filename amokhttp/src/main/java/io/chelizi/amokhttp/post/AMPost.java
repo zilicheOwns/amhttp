@@ -21,6 +21,7 @@ public class AMPost<T> {
     private CacheControl cacheControl;
     private String params;
     private Object tag;
+    private int callMethod;
 
     public AMPost setUrl(String url){
         this.url = url;
@@ -53,11 +54,16 @@ public class AMPost<T> {
         return this;
     }
 
+    public AMPost setCallMethod(int callMethod) {
+        this.callMethod = callMethod;
+        return this;
+    }
+
     public void addObjects(Context context, OnAddListener<T> listener){
         if (query.size() > 0){
-            RequestManager.getInstance().post(context,url,cacheControl,headers,query,tag,listener);
+            RequestManager.getInstance().post(context,url,cacheControl,headers,query,tag,callMethod,listener);
         }else if (!TextUtils.isEmpty(params)){
-            RequestManager.getInstance().post(context,url,cacheControl,headers,params,tag,listener);
+            RequestManager.getInstance().post(context,url,cacheControl,headers,params,tag,callMethod,listener);
         }
     }
 }
