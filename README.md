@@ -3,7 +3,7 @@
 在project/module的build.gradle中添加：
 
 ```gradle
-compile 'io.chelizi:amhttp:1.0.4'
+compile 'io.chelizi:amhttp:1.0.5'
 ```
 
 ### 1.AMQuery 查询（get）
