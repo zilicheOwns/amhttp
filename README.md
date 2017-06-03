@@ -69,20 +69,21 @@ compile 'io.chelizi:amhttp:1.0.4'
 构造一个AMUpload对象。文件上传。如果传的Base64，则可以用AMPost对象。
 
 ```java
-        AMUpload<Size> upload = new AMUpload<>();
-        upload.setUrl("http://192.168.43.36:8090/blog/save")
-                .setFile(new File("pathName"))
-                .setFileName("fileName")
-                .addWhereEqualTo("key","value");
+         AMUpload<Size> upload = new AMUpload<>();
+        upload.setUrl("http://192.168.1.9:8090/blog/upload")
+                .setFile(new File(getFilesDir().getAbsolutePath() + "/image.jpg"))
+                .setFileName("image.jpg")
+                .addWhereEqualTo("image","mark");
+
         upload.uploadObjects(this, new OnUploadListener<Size>() {
             @Override
             public void onRequestProgress(long progress, long total, boolean done) {
-
+                Log.d("upload_success","progress= " + progress + ",total = " + total);
             }
 
             @Override
             public void onResponseSuccess(Size response) {
-
+                Toast.makeText(MainActivity.this,response.getDesc(),Toast.LENGTH_LONG).show();
             }
 
             @Override
