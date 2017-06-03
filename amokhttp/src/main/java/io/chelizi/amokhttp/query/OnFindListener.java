@@ -1,12 +1,13 @@
 package io.chelizi.amokhttp.query;
 
+import android.os.Looper;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
 
-import io.chelizi.amokhttp.RequestManager;
+import io.chelizi.amokhttp.Dispatcher;
 import io.chelizi.amokhttp.RequestListener;
 import io.chelizi.amokhttp.entity.FileCard;
 import io.chelizi.amokhttp.utils.ClassUtils;
@@ -34,7 +35,8 @@ public abstract class OnFindListener<T> implements RequestListener<T> {
             else bean = new Gson().fromJson(responseStr, type);
         }
         final T finalBean = bean;
-        RequestManager.getInstance().getMainHandler().post(new Runnable() {
+        Dispatcher dispatcher = Dispatcher.getDispatcher(Looper.getMainLooper());
+        dispatcher.dispatchToUIThread(new Runnable() {
             @Override
             public void run() {
                 onResponseSuccess(finalBean);

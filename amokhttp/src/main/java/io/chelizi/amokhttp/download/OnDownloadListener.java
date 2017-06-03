@@ -1,10 +1,12 @@
 package io.chelizi.amokhttp.download;
 
+import android.os.Looper;
+
 import java.io.File;
 import java.io.InputStream;
 
+import io.chelizi.amokhttp.Dispatcher;
 import io.chelizi.amokhttp.RequestListener;
-import io.chelizi.amokhttp.RequestManager;
 import io.chelizi.amokhttp.entity.FileCard;
 import io.chelizi.amokhttp.utils.FileUtils;
 import okhttp3.Response;
@@ -24,13 +26,14 @@ public abstract class OnDownloadListener<T> implements RequestListener<T>{
         if (body == null){
             throw new NullPointerException("response body is null");
         }else{
+            final Dispatcher dispatcher = Dispatcher.getDispatcher(Looper.getMainLooper());
             InputStream is = body.byteStream();
             long contentLength = body.contentLength();
             final File file = FileUtils.saveFile(is,
                     contentLength, fileCard, new OnSaveListener() {
                 @Override
                 public void OnProgress(final long progress, final long total) {
-                    RequestManager.getInstance().getMainHandler().post(new Runnable() {
+                    dispatcher.dispatchToUIThread(new Runnable() {
                         @Override
                         public void run() {
                             onProgressChanged(progress,total);
@@ -38,7 +41,7 @@ public abstract class OnDownloadListener<T> implements RequestListener<T>{
                     });
                 }
             });
-            RequestManager.getInstance().getMainHandler().post(new Runnable() {
+            dispatcher.dispatchToUIThread(new Runnable() {
                 @Override
                 public void run() {
                     onResponseSuccess((T)file);

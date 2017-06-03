@@ -66,20 +66,20 @@ public class MainActivity extends AppCompatActivity {
 
     private void upload() {
         AMUpload<Size> upload = new AMUpload<>();
-        upload.setUrl("http://192.168.43.36:8090/blog/save")
-                .setFile(new File("pathName"))
-                .setFileName("fileName")
-                .addWhereEqualTo("key","value");
+        upload.setUrl("http://192.168.1.9:8090/blog/upload")
+                .setFile(new File(getFilesDir().getAbsolutePath() + "/image.jpg"))
+                .setFileName("image.jpg")
+                .addWhereEqualTo("image","mark");
 
         upload.uploadObjects(this, new OnUploadListener<Size>() {
             @Override
             public void onRequestProgress(long progress, long total, boolean done) {
-
+                Log.d("upload_success","progress= " + progress + ",total = " + total);
             }
 
             @Override
             public void onResponseSuccess(Size response) {
-
+                Toast.makeText(MainActivity.this,response.getDesc(),Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -98,8 +98,8 @@ public class MainActivity extends AppCompatActivity {
         AMDownload<File> download = new AMDownload<>();
         download.setUrl("http://img0.utuku.china.com/550x0/news/20170528/1b3b24eb-44d4-4548-a40a-e6c089f6b4db.jpg")
                 .setFileCard(new FileCard(
-                        getCacheDir().getAbsolutePath(),
-                        System.currentTimeMillis() + ".jpg"));
+                        getFilesDir().getAbsolutePath(),
+                        "image.jpg"));
 
         download.downloadObjects(this, new OnDownloadListener<File>() {
 
@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void add() {
         AMPost<String> post = new AMPost<>();
-        post.setUrl("http://192.168.43.36:8090/blog/save")
+        post.setUrl("http://192.168.1.9:8090/blog/save")
             .addWhereEqualTo("title","最新报道")
             .addWhereEqualTo("content","tianjin")
             .setCacheControl(CacheControl.FORCE_NETWORK)
@@ -137,7 +137,9 @@ public class MainActivity extends AppCompatActivity {
         post.addObjects(this, new OnAddListener<String>() {
             @Override
             public void onResponseSuccess(String response) {
-
+                if (Thread.currentThread().getName().equals("main")){
+                    Toast.makeText(MainActivity.this,",并且在主线程中",Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override
@@ -155,13 +157,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void load() {
         AMQuery<Blog> query = new AMQuery<>();
-        query.setUrl("http://192.168.1.10:8090/blog/id?id=1")
+        query.setUrl("http://192.168.1.9:8090/blog/id?id=1")
              .setCacheControl(CacheControl.FORCE_NETWORK)
              .setTag(hashCode());
         query.findObjects(this, new OnFindListener<Blog>() {
             @Override
             public void onResponseSuccess(Blog response) {
-                Toast.makeText(MainActivity.this,response.getTitle(),Toast.LENGTH_LONG).show();
+                if (Thread.currentThread().getName().equals("main")){
+                    Toast.makeText(MainActivity.this,response.getTitle() + ",并且在主线程中",Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override

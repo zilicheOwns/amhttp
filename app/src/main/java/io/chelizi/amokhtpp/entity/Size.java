@@ -8,6 +8,7 @@ public class Size {
 
     private int width;
     private int height;
+    private String desc;
 
     public int getWidth() {
         return width;
@@ -23,5 +24,13 @@ public class Size {
 
     public void setHeight(int height) {
         this.height = height;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 }
