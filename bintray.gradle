@@ -71,9 +71,13 @@ install {
     }
 }
 
+Properties properties = new Properties()
+//读取properties的配置信息，当然直接把信息写到代码里也是可以的
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
 bintray {
-    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : project.property('BINTRAY_USER')
-    key = project.hasProperty('bintrayKey') ? project.property('bintrayKey') : project.property('BINTRAY_KEY')
+    user = properties.getProperty('BINTRAY_USER')
+    key = properties.getProperty('BINTRAY_KEY')
 
     configurations = ['archives']
 
