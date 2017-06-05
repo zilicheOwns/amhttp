@@ -3,7 +3,7 @@
 在project/module的build.gradle中添加：
 
 ```gradle
-compile 'io.chelizi:amhttp:1.0.6'
+compile 'io.chelizi:amhttp:1.0.7'
 ```
 
 ## 服务端测试环境
@@ -19,6 +19,7 @@ git地址：https://github.com/Eddieyuan123/amhttp-server.git
         query.setUrl("http://192.168.1.10:8090/blog/id?id=1")
              .setCacheControl(CacheControl.FORCE_NETWORK)
              .setCallMethod(CallMethod.SYNC)//同步
+             .openDebug(true)//日志开关
              .setTag(hashCode());
         query.findObjects(this, new OnFindListener<Blog>() {
             @Override
