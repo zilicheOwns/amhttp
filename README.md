@@ -1,9 +1,24 @@
+## 版本更新日志
+
+### 版本1.0.7
+
+增加日志开关，默认关闭。格式化返回的JSON数据。方便调试。
+
+### 版本1.0.6
+
+支持同步异步请求。修复一些已知问题。
+
+### 版本1.0.5
+
+支持文件上传。
+
+
 ## 用法
 
 在project/module的build.gradle中添加：
 
 ```gradle
-compile 'io.chelizi:amhttp:1.0.5'
+compile 'io.chelizi:amhttp:1.0.7'
 ```
 
 ## 服务端测试环境
@@ -12,13 +27,15 @@ git地址：https://github.com/Eddieyuan123/amhttp-server.git
 
 ### 1.AMQuery 查询（get）
 
-构建一个AMQuery对象，不需要关心内部如何实现，配置相应的参数即可。对于response返回的数据经Gson映射成实体。使用起来简单方便。
+构建一个AMQuery对象，不需要关心内部如何实现，配置相应的参数即可。对于response返回的数据经Gson映射成实体。使用起来简单方便。支持同步异步请求。
 
 ```java
  AMQuery<Blog> query = new AMQuery<>();
         query.setUrl("http://192.168.1.10:8090/blog/id?id=1")
              .setCacheControl(CacheControl.FORCE_NETWORK)
-             .setTag(hashCode());
+             .setCallMethod(CallMethod.SYNC)//同步
+             .openDebug(true)//日志开关
+             .setTag(hashCode());
         query.findObjects(this, new OnFindListener<Blog>() {
             @Override
             public void onResponseSuccess(Blog response) {
