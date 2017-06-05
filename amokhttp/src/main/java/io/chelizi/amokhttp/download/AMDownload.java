@@ -4,6 +4,7 @@ import android.content.Context;
 
 import io.chelizi.amokhttp.RequestManager;
 import io.chelizi.amokhttp.entity.FileCard;
+import io.chelizi.amokhttp.utils.LogUtil;
 
 /**
  * Created by Eddie on 2017/5/24.
@@ -24,6 +25,10 @@ public class AMDownload<T> {
         return this;
     }
 
+    public AMDownload openDebug(boolean debug) {
+        LogUtil.openDebug(debug);
+        return this;
+    }
 
     public void downloadObjects(Context context, OnDownloadListener<T> listener){
         RequestManager.getInstance().download(url,fileCard,listener);

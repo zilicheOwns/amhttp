@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.chelizi.amokhttp.download.OnDownloadListener;
 import io.chelizi.amokhttp.entity.FileCard;
+import io.chelizi.amokhttp.interceptors.LoggingInterceptor;
 import io.chelizi.amokhttp.post.OnAddListener;
 import io.chelizi.amokhttp.query.OnFindListener;
 import io.chelizi.amokhttp.upload.OnUploadListener;
@@ -38,6 +39,7 @@ public class RequestManager {
                 .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
                 .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
                 .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
+                .addInterceptor(new LoggingInterceptor())
                 .build();
     }
 

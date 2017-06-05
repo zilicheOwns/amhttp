@@ -172,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
         query.setUrl("http://192.168.1.9:8090/blog/id?id=1")
              .setCallMethod(CallMethod.SYNC)
              .setCacheControl(CacheControl.FORCE_NETWORK)
+             .openDebug(true)
              .setTag(hashCode());
         query.findObjects(this, new OnFindListener<Blog>() {
             @Override

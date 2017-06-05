@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import java.util.HashMap;
 
 import io.chelizi.amokhttp.RequestManager;
+import io.chelizi.amokhttp.utils.LogUtil;
 import okhttp3.CacheControl;
 
 /**
@@ -56,6 +57,11 @@ public class AMPost<T> {
 
     public AMPost setCallMethod(int callMethod) {
         this.callMethod = callMethod;
+        return this;
+    }
+
+    public AMPost openDebug(boolean debug) {
+        LogUtil.openDebug(debug);
         return this;
     }
 

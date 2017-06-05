@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.HashMap;
 
 import io.chelizi.amokhttp.RequestManager;
+import io.chelizi.amokhttp.utils.LogUtil;
 import okhttp3.CacheControl;
 
 /**
@@ -58,6 +59,10 @@ public class AMUpload<T> {
         return this;
     }
 
+    public AMUpload openDebug(boolean debug) {
+        LogUtil.openDebug(debug);
+        return this;
+    }
 
     public void uploadObjects(Context context, OnUploadListener<T> listener) {
         RequestManager.getInstance().upload(context, url, cacheControl, headers, file, fileName, upload, tag, listener);
